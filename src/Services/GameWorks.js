@@ -9,28 +9,60 @@ class GameWorks {
     #init;
     #update;
     #render;
-    #methods;
     lastTickTimestamp;
+    assets = {};
 
     constructor(setup){
         // set all the properties
         this.setupProperties = setup.setupProperties;
         this.#destructureProperties();
 
+        // set all the lifecycle hooks
         this.#init = setup.init;
 
         this.#update = setup.update;
 
         this.#render = setup.render;
 
+        // set methods and bind "this" context
         this.methods = setup.methods;
         this.#destructureMethods();
 
-        this.#init();
+        this.preloads = setup.preloads;
 
-        this.loop = this.loop.bind(this);
-        this.lastTickTimestamp = performance.now();
-        this.loop();
+        //preload objects - promise based
+        this.preloadAssets().then(() => {
+            this.#init();
+
+            this.loop = this.loop.bind(this);
+            this.lastTickTimestamp = performance.now();
+            this.loop();
+        })
+        
+    }
+
+    preloadAssets(){
+        return new Promise( async (resolve,reject) => {
+            for(let item in this.preloads){
+                let asset = await this.#loadAssets(this.preloads[item].type,this.preloads[item].src);
+                this.assets[item] = asset;
+
+                if("extras" in this.preloads[item])
+                    this.assets[item].extras = this.preloads[item].extras
+            }
+            resolve();
+        })
+    }
+
+    #loadAssets(type,src){
+
+        return new Promise((resolve,reject) => {
+            let newAsset = new type;
+            newAsset.src = src;
+            newAsset.onload = () => {
+                resolve(newAsset)
+            }
+        })
     }
 
     #destructureProperties(){
