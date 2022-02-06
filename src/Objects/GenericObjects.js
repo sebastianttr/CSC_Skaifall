@@ -17,9 +17,9 @@ export default class GameObjects {
         // draw bounding box rectangle
         if (CONFIG.debug) {
           let bb = this.getBoundingBox();
-          this.context.translate(bb.x, bb.y);
-          this.context.strokeRect(0, 0, bb.w, bb.h);
-          this.context.resetTransform();
+          this.ctx.translate(bb.x, bb.y);
+          this.ctx.strokeRect(0, 0, bb.w, bb.h);
+          this.ctx.resetTransform();
         }
       }
 

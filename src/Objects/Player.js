@@ -1,5 +1,5 @@
 import CONFIG from "../Config.js";
-import GameObjects from "./GameObjects.js";
+import GameObjects from "./GenericObjects.js";
 
 class Player extends GameObjects{
     constructor(ctx,x,y,width,height,assets){
@@ -68,11 +68,11 @@ class Player extends GameObjects{
         this.ctx.scale(this.lastDirection*0.3, 0.3);
 
         // get the correct sprite
-        let coords = this.getImageSpriteCoordinate(this.assets["run"].extras);
+        let coords = this.getImageSpriteCoordinate(this.assets[this.translateState].extras);
 
         //draw filled retangle
         this.ctx.drawImage(
-            this.assets.run, // image
+            this.assets[this.translateState], // image
             coords.sourceX, // source x
             coords.sourceY, // soruce y
             coords.sourceWidth, // source width

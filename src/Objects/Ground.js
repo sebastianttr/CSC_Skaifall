@@ -1,4 +1,4 @@
-import GameObjects from "./GameObjects.js";
+import GameObjects from "./GenericObjects.js";
 import CONFIG from "../Config.js";
 
 class Ground extends GameObjects{
