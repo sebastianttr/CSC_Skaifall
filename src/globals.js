@@ -3,8 +3,8 @@ import {SceneStart} from "./Scenes/SceneStart.js";
 const CONFIG = {
     debug: false,
     canvas: {
-        height: 720,
-        width: 360
+        height: 840,
+        width: 420
     }
 }
 

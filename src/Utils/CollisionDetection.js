@@ -1,4 +1,4 @@
-import {CONFIG,ctx} from "../commons.js"
+import {CONFIG,ctx} from "../globals.js"
 
 let checkCollisionBetween = (gameObjectA, gameObjectB) => {
     let bbA = gameObjectA.getBoundingBox();

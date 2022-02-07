@@ -1,13 +1,11 @@
-import CONFIG from "../Config.js"
+import {CONFIG,ctx} from "../globals.js"
 
 export default class GameObjects {
-    constructor(ctx, x, y, width, height, img){
-        this.ctx = ctx;
+    constructor(x, y, width, height){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.img = img
     }
 
     init() {}
@@ -17,9 +15,9 @@ export default class GameObjects {
         // draw bounding box rectangle
         if (CONFIG.debug) {
           let bb = this.getBoundingBox();
-          this.ctx.translate(bb.x, bb.y);
-          this.ctx.strokeRect(0, 0, bb.w, bb.h);
-          this.ctx.resetTransform();
+          ctx.translate(bb.x, bb.y);
+          ctx.strokeRect(0, 0, bb.w, bb.h);
+          ctx.resetTransform();
         }
       }
 

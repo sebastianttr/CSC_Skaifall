@@ -8,6 +8,7 @@ class Cue {
     #init;
     #update;
     #render;
+    #destroy;
     lastTickTimestamp;
     assets = {};
     #requestAnimationFrameID;
@@ -23,6 +24,8 @@ class Cue {
         this.#update = setup.update;
 
         this.#render = setup.render;
+
+        this.#destroy = setup.destroy;
 
         // set methods and bind "this" context
         this.methods = setup.methods;
@@ -104,7 +107,14 @@ class Cue {
         //call next iteration of the game loop
        
         this.#requestAnimationFrameID = requestAnimationFrame(this.loop);
-        
+    }
+
+    switchScene(sceneName){
+        this.#destroy();
+        this.stop();
+        let customEvent = new CustomEvent("switchScene")
+        customEvent.data = sceneName;
+        canvas.dispatchEvent(customEvent)
     }
 }
 
