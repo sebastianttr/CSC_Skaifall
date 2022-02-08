@@ -13,10 +13,11 @@ class Cue {
     assets = {};
     #requestAnimationFrameID;
     #run = false;
+    #setupPropertiesStart;
 
     constructor(setup){
         // set all the properties
-        this.setupProperties = setup.setupProperties;
+        this.#setupPropertiesStart = setup.setupProperties;
 
         // set all the lifecycle hooks
         this.#init = setup.init;
@@ -28,6 +29,7 @@ class Cue {
         this.#destroy = setup.destroy;
 
         // set methods and bind "this" context
+        
         this.methods = setup.methods;
 
         this.preloads = setup.preloads;
@@ -39,6 +41,7 @@ class Cue {
             this.#destructureProperties();
             this.#destructureMethods();
 
+            this.setupProperties = this.#setupPropertiesStart;
             this.#init();
 
             this.loop = this.loop.bind(this);
@@ -79,8 +82,8 @@ class Cue {
     }
 
     #destructureProperties(){
-        for(let props in this.setupProperties){
-            this[props] = this.setupProperties[props]
+        for(let props in this.#setupPropertiesStart){
+            this[props] = this.#setupPropertiesStart[props]
         }
     }
     

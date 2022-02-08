@@ -7,6 +7,7 @@ class Button extends GenericObjects{
 
     isHovering = false;
     isClicked = false;
+    #animationStep = 1;
 
     constructor(x,y,w,h,text,fontSize,callback){
         super(x,y,w,h)
@@ -18,6 +19,18 @@ class Button extends GenericObjects{
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseClickDown = this.handleMouseClickDown.bind(this);
         this.handleMouseClickUp = this.handleMouseClickUp.bind(this);
+
+        this.borderAnimationOffset = {
+            x: 0,
+            y: 0
+        }
+
+        this.fillAnimationOffSet = {
+            x: 0,
+            y: 0
+        }
+
+        this.opacity = 1;
 
         this.init();
     }
@@ -32,6 +45,13 @@ class Button extends GenericObjects{
             //console.log("Hovering over!")
             this.isHovering = true;
 
+            if(this.borderAnimationOffset.x < 5 && this.borderAnimationOffset.y > -5){
+                this.borderAnimationOffset.x += this.#animationStep;
+                this.borderAnimationOffset.y -= this.#animationStep;
+                this.fillAnimationOffSet.x += this.#animationStep;
+                this.fillAnimationOffSet.y -= this.#animationStep;
+            }
+
             if(this.isClicked){
                 this.callback();
             }
@@ -39,6 +59,13 @@ class Button extends GenericObjects{
         else {
             this.isHovering = false;
             this.isClicked = false;
+
+            if(this.borderAnimationOffset.x > 0 && this.borderAnimationOffset.y < 0){
+                this.borderAnimationOffset.x -= this.#animationStep;
+                this.borderAnimationOffset.y += this.#animationStep;
+                this.fillAnimationOffSet.x -= this.#animationStep;
+                this.fillAnimationOffSet.y += this.#animationStep;
+            }
         }
     }
 
@@ -49,6 +76,8 @@ class Button extends GenericObjects{
 
         ctx.save();
 
+        ctx.globalAlpha = this.opacity
+
         ctx.strokeStyle = "#0d4dfc";
         ctx.lineWidth =  5;
         ctx.lineJoin = 'round';
@@ -58,16 +87,16 @@ class Button extends GenericObjects{
 
         ctx.beginPath();
         ctx.strokeRect(
-            -this.width/2, 
-            -this.height/2, 
+            -this.width/2 - this.borderAnimationOffset.x, 
+            -this.height/2 - this.borderAnimationOffset.y, 
             this.width, 
             this.height
         );
 
         ctx.fillStyle = (this.isHovering)?"#dcdaf7":"#7d74e3";
         ctx.fillRect(
-            -this.width/2, 
-            -this.height/2, 
+            -this.width/2 + this.fillAnimationOffSet.x, 
+            -this.height/2 + this.fillAnimationOffSet.y, 
             this.width, 
             this.height
         )
@@ -78,8 +107,8 @@ class Button extends GenericObjects{
 
         ctx.fillText(
             this.text,
-            0, 
-            15, 
+            0 + this.fillAnimationOffSet.x, 
+            15 + this.fillAnimationOffSet.y, 
         )
 
         ctx.restore();
@@ -108,7 +137,7 @@ class Button extends GenericObjects{
     }
 
     removeEventListeners(){
-        console.log("remove event listeners")
+        //console.log("remove event listeners")
         canvas.removeEventListener("mousemove",this.handleMouseMove,true);
         canvas.removeEventListener("mousedown",this.handleMouseClickDown,true);
         canvas.removeEventListener("mouseup",this.handleMouseClickUp,true);

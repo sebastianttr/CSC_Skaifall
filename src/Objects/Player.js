@@ -1,60 +1,51 @@
-import CONFIG from "../Config.js";
 import GameObjects from "./GenericObjects.js";
+import {ctx,CONFIG} from "../globals.js"
 
 class Player extends GameObjects{
-    constructor(ctx,x,y,width,height,assets){
-        super(ctx, x, y, width, height, null, CONFIG);
+    constructor(x,y,width,height,assets){
+        super(x, y, width, height, null, CONFIG);
 
         this.dx = 0;
         this.dy = 0;
         this.velocity = 0.5;
         this.currentKeys = {};
         this.lastDirection = 1;
+        this.gravity = 0.5
+        this.velocityX = 1;
 
         this.assets = assets;
         this.translateState = "idle"
 
+        this.handleMousePosition = this.handleMousePosition.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+
         //console.log(this.assets.run.extras);
+
+        this.mousePosition = {
+            x:0,
+            y:0
+        }
 
         this.init();
     }
 
     init(){
         // set key event listeners
-        // key down event handling -> prevent default
-        document.addEventListener("keydown",(event) => {
-            if (event.code.startsWith("Arrow") || event.code === "Space") {
-                event.preventDefault();
-              }
-            this.currentKeys[event.code] = true;
-        })
-
-        // key up event handling
-        document.addEventListener("keyup",(event) => {
-            this.currentKeys[event.code] = false;
-        })
-
+        this.setEventListeners();
     }
 
     update(timePassedSinceLastRender){
         // set the value of dx (along the x axis)
-        if (this.currentKeys["ArrowRight"]) this.dx = 1;
-        else if (this.currentKeys["ArrowLeft"]) this.dx = -1;
+        if (this.currentKeys["ArrowRight"] || this.currentKeys["KeyD"]) this.dx = 1;
+        else if (this.currentKeys["ArrowLeft"] || this.currentKeys["KeyA"]) this.dx = -1;
         else this.dx = 0;
-    
-        // set the value of dy (along the y axis)
-        if (this.currentKeys["ArrowDown"]) this.dy = 1;
-        else if (this.currentKeys["ArrowUp"]) this.dy = -1;
-        else this.dy = 0;
-    
-        //store the last direction the player moved in
-        if (this.dx != 0) this.lastDirection = this.dx;
 
         // calculate the position X and Y respectively
-        this.x += timePassedSinceLastRender * this.dx * this.velocity;
+        //this.velocityX *= this.gravity * timePassedSinceLastRender
+        this.x = this.mousePosition.x;
         this.y += timePassedSinceLastRender * this.dy * this.velocity;
 
-        this.translateState = this.dx === 0 && this.dy === 0 ? "idle" : "run";
     }
 
     render(){
@@ -62,45 +53,66 @@ class Player extends GameObjects{
         super.render();
 
         //move canvas origin to x,0
-        this.ctx.translate(this.x, this.y);
-
-        //mirroring
-        this.ctx.scale(this.lastDirection*0.3, 0.3);
+        ctx.translate(this.x, this.y);
 
         // get the correct sprite
-        let coords = this.getImageSpriteCoordinate(this.assets[this.translateState].extras);
 
         //draw filled retangle
-        this.ctx.drawImage(
-            this.assets[this.translateState], // image
-            coords.sourceX, // source x
-            coords.sourceY, // soruce y
-            coords.sourceWidth, // source width
-            coords.sourceHeight, // source height
+        ctx.drawImage(
+            this.assets, // image
             -this.width / 2, // destination x
             -this.height / 2, // destination y
-            this.width, // destination width
-            this.height // destination height
+            this.width/2, // destination width
+            this.height/2 // destination height
         );
   
         //reset the transform
-        this.ctx.resetTransform();
+        ctx.resetTransform();
     }
 
     getImageSpriteCoordinate(sprite) {
         let frameX = Math.floor(
-          ((performance.now() / 1000) * sprite.fps) % sprite.frames
+            ((performance.now() / 1000) * sprite.fps) % sprite.frames
         );
-    
+
         let coords = {
-          sourceX: frameX * sprite.frameSize.width, // TODO
-          sourceY: 0,
-          sourceWidth: sprite.frameSize.width,
-          sourceHeight: sprite.frameSize.height,
+            sourceX: frameX * sprite.frameSize.width, // TODO
+            sourceY: 0,
+            sourceWidth: sprite.frameSize.width,
+            sourceHeight: sprite.frameSize.height,
         };
-    
+
         return coords;
-      }
+    }
+
+    handleKeyDown(ev){
+        if (ev.code.startsWith("Arrow") || ev.code === "Space") {
+            ev.preventDefault();
+        }
+        this.currentKeys[ev.code] = true;
+    }
+
+    handleKeyUp(ev){
+        this.currentKeys[ev.code] = false;
+    }
+
+    handleMousePosition(ev){
+        let clientRect = canvas.getBoundingClientRect();
+        this.mousePosition.x = Math.round(ev.clientX - clientRect.left);
+        this.mousePosition.y = Math.round(ev.clientY - clientRect.top);  
+    }
+
+    setEventListeners(){
+        document.addEventListener("keydown", this.handleKeyDown,true);
+        document.addEventListener("keyup", this.handleKeyUp,true);
+        canvas.addEventListener("mousemove",this.handleMousePosition,true);
+    }
+
+    removeEventListeners(){
+        document.removeEventListener("keydown", this.handleKeyDown,true);
+        document.removeEventListener("keyup", this.handleKeyUp,true);
+        canvas.removeEventListener("mousemove",this.handleMousePosition,true);
+    }
 }
 
 export default Player;

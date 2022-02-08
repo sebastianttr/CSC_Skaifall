@@ -14,7 +14,6 @@ let scenes = [
         name:"SceneMain",
         scene: new SceneMain(),
     }
-
 ]
 
 const init = () => {
@@ -23,13 +22,6 @@ const init = () => {
     canvas.setAttribute("height",CONFIG.canvas.height);
 
     sceneSwitcher = new SceneSwitcher();
-    sceneSwitcher.addScene(
-        {
-            name:"SceneStart",
-            scene: new SceneStart(),
-            id: 1
-        }
-    );
 
     scenes.forEach((item,index) => {
         item.id = index;
@@ -39,14 +31,6 @@ const init = () => {
     sceneSwitcher.setCurrentScene("SceneStart");
     sceneSwitcher.run();
     
-    /*
-    setTimeout(()=> {
-        
-        let customEvent = new CustomEvent("switchScene")
-        customEvent.data = "Hello World";
-        canvas.dispatchEvent(customEvent)
-    },2000)
-    */
 }
 
 window.addEventListener("load",() => {
