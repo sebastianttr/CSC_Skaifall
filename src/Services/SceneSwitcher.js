@@ -13,7 +13,6 @@ class SceneSwitcher {
     }
 
     addScene(scene){
-
         //scene.start();
 
         if(scene.scene instanceof Cue)

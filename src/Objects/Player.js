@@ -1,5 +1,5 @@
 import GameObjects from "./GenericObjects.js";
-import {ctx,CONFIG} from "../globals.js"
+import {ctx,CONFIG,map, canvas} from "../globals.js"
 
 class Player extends GameObjects{
     constructor(x,y,width,height,assets){
@@ -11,7 +11,8 @@ class Player extends GameObjects{
         this.currentKeys = {};
         this.lastDirection = 1;
         this.gravity = 0.5
-        this.velocityX = 1;
+        this.velocityX = 0.5;
+        this.velocityY = 0.5;
 
         this.assets = assets;
         this.translateState = "idle"
@@ -19,6 +20,8 @@ class Player extends GameObjects{
         this.handleMousePosition = this.handleMousePosition.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
+
+        this.health = 3;
 
         //console.log(this.assets.run.extras);
 
@@ -41,11 +44,22 @@ class Player extends GameObjects{
         else if (this.currentKeys["ArrowLeft"] || this.currentKeys["KeyA"]) this.dx = -1;
         else this.dx = 0;
 
-        // calculate the position X and Y respectively
-        //this.velocityX *= this.gravity * timePassedSinceLastRender
-        this.x = this.mousePosition.x;
-        this.y += timePassedSinceLastRender * this.dy * this.velocity;
+        this.oldY = this.y
 
+        // calculate the position X and Y respectively
+
+        this.velocityX = (this.mousePosition.x) - this.x
+        this.x += this.velocityX * timePassedSinceLastRender / 100
+
+        //console.log(this.velocityX)
+
+        this.velocityY = (this.mousePosition.y) - this.y
+        this.y += timePassedSinceLastRender / 100 * this.velocityY;
+
+        // this is great for the difficulty of the game
+        if(this.y < 600 || this.y > 750){
+            this.y = this.oldY
+        }
     }
 
     render(){
@@ -62,8 +76,8 @@ class Player extends GameObjects{
             this.assets, // image
             -this.width / 2, // destination x
             -this.height / 2, // destination y
-            this.width/2, // destination width
-            this.height/2 // destination height
+            this.width, // destination width
+            this.height // destination height
         );
   
         //reset the transform
@@ -106,12 +120,16 @@ class Player extends GameObjects{
         document.addEventListener("keydown", this.handleKeyDown,true);
         document.addEventListener("keyup", this.handleKeyUp,true);
         canvas.addEventListener("mousemove",this.handleMousePosition,true);
+        canvas.addEventListener("touchmove",this.handleMousePosition,true);
     }
 
     removeEventListeners(){
         document.removeEventListener("keydown", this.handleKeyDown,true);
         document.removeEventListener("keyup", this.handleKeyUp,true);
         canvas.removeEventListener("mousemove",this.handleMousePosition,true);
+        canvas.removeEventListener("touchmove",this.handleMousePosition,true);
+
+    
     }
 }
 

@@ -134,6 +134,10 @@ class Button extends GenericObjects{
         canvas.addEventListener("mousemove",this.handleMouseMove,true);       
         canvas.addEventListener("mousedown",this.handleMouseClickDown,true);
         canvas.addEventListener("mouseup",this.handleMouseClickUp,true);
+
+        canvas.addEventListener("touchstart",this.handleMouseClickDown,true)
+        canvas.addEventListener("touchend",this.handleMouseClickUp,true)
+
     }
 
     removeEventListeners(){
@@ -142,7 +146,8 @@ class Button extends GenericObjects{
         canvas.removeEventListener("mousedown",this.handleMouseClickDown,true);
         canvas.removeEventListener("mouseup",this.handleMouseClickUp,true);
 
-
+        canvas.removeEventListener("touchstart",this.handleMouseClickDown,true)
+        canvas.removeEventListener("touchend",this.handleMouseClickUp,true)
     }
 
 

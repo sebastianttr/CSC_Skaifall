@@ -55,7 +55,6 @@ let SceneStart = function(){
                     this.startButton.opacity -= 0.01
                     this.guideButton.opacity -= 0.01
                     this.textOpacity -= 0.01
-                    
                 }
 
                 this.startButton.update();
@@ -112,6 +111,7 @@ let SceneStart = function(){
                 
             },
             destroy(){
+                this.gameObjects.length = 0;
                 this.removeKeyEventListeners();
                 this.startButton.removeEventListeners();
                 this.guideButton.removeEventListeners();

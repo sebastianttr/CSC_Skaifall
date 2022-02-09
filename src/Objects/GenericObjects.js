@@ -14,10 +14,13 @@ export default class GameObjects {
     render() {
         // draw bounding box rectangle
         if (CONFIG.debug) {
-          let bb = this.getBoundingBox();
-          ctx.translate(bb.x, bb.y);
-          ctx.strokeRect(0, 0, bb.w, bb.h);
-          ctx.resetTransform();
+            ctx.save();
+            let bb = this.getBoundingBox();
+            ctx.strokeStyle = "red";
+            ctx.translate(bb.x, bb.y);
+            ctx.strokeRect(0, 0, bb.w, bb.h);
+            ctx.restore();
+            ctx.resetTransform();
         }
       }
 

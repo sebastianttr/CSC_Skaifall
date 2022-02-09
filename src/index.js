@@ -2,6 +2,7 @@ import {CONFIG,ctx,canvas} from "./globals.js"
 import SceneSwitcher from "./Services/SceneSwitcher.js";
 import {SceneStart} from "./Scenes/SceneStart.js";
 import {SceneMain} from "./Scenes/SceneMain.js";
+import {SceneEnd} from "./Scenes/SceneEnd.js";
 
 let sceneSwitcher;
 
@@ -13,10 +14,14 @@ let scenes = [
     {
         name:"SceneMain",
         scene: new SceneMain(),
+    },
+    {
+        name:"SceneEnd",
+        scene: new SceneEnd(),
     }
 ]
 
-const init = () => {
+const app = () => {
     // set canvas size
     canvas.setAttribute("width",CONFIG.canvas.width);
     canvas.setAttribute("height",CONFIG.canvas.height);
@@ -35,5 +40,5 @@ const init = () => {
 
 window.addEventListener("load",() => {
     //run init after page load
-    init();
+    app();
 })
