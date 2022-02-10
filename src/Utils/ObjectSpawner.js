@@ -6,7 +6,7 @@ export default class ObjectSpawner{
     }
 
     spawnAfterTime(callback){
-        let randomTime = map(Math.random,0,1,this.options.min,this.options.max)
+        let randomTime = map(Math.random(),0,1,this.options.min,this.options.max)
         setTimeout(callback,randomTime);
     }
 }

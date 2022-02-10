@@ -16,14 +16,49 @@ let SceneMain = function(){
                 playerImg:{
                     src:"./Assets/images/player.png",
                     type: Image
-                }
+                },
+                obstacle1:{
+                    src:"./Assets/images/obstacles/meteor_1.png",
+                    type: Image
+                },
+                obstacle2:{
+                    src:"./Assets/images/obstacles/meteor_2.png",
+                    type: Image
+                },
+                obstacle3:{
+                    src:"./Assets/images/obstacles/meteor_3.png",
+                    type: Image
+                },
+                obstacle4:{
+                    src:"./Assets/images/obstacles/meteor_4.png",
+                    type: Image
+                },
+                obstacle5:{
+                    src:"./Assets/images/obstacles/meteor_5.png",
+                    type: Image
+                },
+                obstacle6:{
+                    src:"./Assets/images/obstacles/meteor_6.png",
+                    type: Image
+                },
+                obstacle7:{
+                    src:"./Assets/images/obstacles/meteor_7.png",
+                    type: Image
+                },
+                obstacle8:{
+                    src:"./Assets/images/obstacles/meteor_8.png",
+                    type: Image
+                },
             },
             setupProperties:{
                 gameObjects:[],
                 obstacles:[],
                 player: null,
+                playerVelocity: 1,
                 playerDiedFlag:false,
-                objectSpawner:null
+                objectSpawner:null,
+                score:0,
+                difficultyLevel:0
             },
             init(){
 
@@ -38,13 +73,16 @@ let SceneMain = function(){
                 this.gameObjects.push(this.player)
                 
                 let objectSpawnerOptions = {
-                    min: 1000,
-                    max: 4000
+                    min: 400,
+                    max: 1000
                 }
 
                 this.objectSpawner = new ObjectSpawner(objectSpawnerOptions);
 
+                //run timed spawner
+
                 this.spawnNewObstacle();
+
 
                 /*
                 setTimeout(()=> {
@@ -57,13 +95,20 @@ let SceneMain = function(){
 
                 // update the states of all the game objects
                 this.gameObjects.forEach((el) => {
+                    el.playerVelocity = this.playerVelocity;
+
                     if(el.y - el.height >= CONFIG.canvas.height){
-                        console.log("Remove this item, spawn a new one")
                         // add to remove items array 
                         objToRemove.push(el);
 
-                        // spawn new obstacle
-                        this.spawnNewObstacle();
+                        this.score++;
+
+                        if(this.score % 5 == 0){
+                            //console.log("Increasing difficulty")
+                            this.objectSpawner.options.min *= 0.95;
+                            this.objectSpawner.options.max *= 0.95;
+                            this.playerVelocity *= 1.02;
+                        }
                     }
 
                     if(!(el instanceof Player) && checkCollisionBetween(el,this.player)){
@@ -85,11 +130,7 @@ let SceneMain = function(){
                 // do something if the player died
                 if(this.playerDiedFlag){
                     this.switchScene("SceneEnd");
-                    console.log("switching")
                 }
-
-
-
             },
             render(){
                 //clear and reset canvas
@@ -109,25 +150,67 @@ let SceneMain = function(){
                     el.render();
                 })
 
+
+                ctx.save();
+
+                ctx.fillStyle = "white";
+                ctx.font = "40px Gamefont";
+                
+                let amountOfDigits = this.getNumNDigits(this.score);
+
+                
+                ctx.beginPath();
+                ctx.fillRect(
+                    CONFIG.canvas.width/2 - (20 * amountOfDigits),
+                    20,
+                    (40 * amountOfDigits),
+                    40
+                )
+
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+
+                ctx.fillText(
+                    this.score,
+                    CONFIG.canvas.width/2,
+                    55,
+                )
+
+                ctx.restore();
+
+
+
             },
             destroy(){
                 this.gameObjects.length = 0;
                 this.player.removeEventListeners();
+                this.stopSpawning();
             }, 
             methods:{
                 spawnNewObstacle(){
-                    this.objectSpawner.spawnAfterTime(()=>{
-                        console.log("creating obstacle")
-                        this.gameObjects.push(
-                            new Obstacle(
-                                map(Math.random(),0,1,0,CONFIG.canvas.width),
-                                0,
-                                100,
-                                100,
-                                null
-                            )
-                        )
-                    })
+                    if(this.objectSpawner != null)
+                        this.objectSpawner.spawnAfterTime(()=>{
+                            //console.log("creating obstacle")
+                            this.gameObjects.push(this.getRandomObstacle())
+                            this.spawnNewObstacle();
+                        })
+                },
+                stopSpawning(){
+                    this.objectSpawner = null;
+                },
+                getRandomObstacle(){
+                    let randomObstacleIndex = Math.round(map(Math.random(),0,1,1,8));
+
+                    return new Obstacle(
+                        map(Math.random(),0,1,0,CONFIG.canvas.width),
+                        0,
+                        this.assets[`obstacle${randomObstacleIndex}`].naturalWidth,
+                        this.assets[`obstacle${randomObstacleIndex}`].naturalHeight,
+                        this.assets[`obstacle${randomObstacleIndex}`]
+                    )
+                },
+                getNumNDigits(num){
+                    return num.toString().length;
                 }
             }
         }

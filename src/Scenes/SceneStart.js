@@ -111,7 +111,6 @@ let SceneStart = function(){
                 
             },
             destroy(){
-                this.gameObjects.length = 0;
                 this.removeKeyEventListeners();
                 this.startButton.removeEventListeners();
                 this.guideButton.removeEventListeners();

@@ -7,6 +7,7 @@ class Obstacle extends GameObjects{
         super(x,y,width,height);
         this.img = img;
 
+        this.playerVelocity = 1;
         this.velocity = 0.35;
         this.dx = 0;
         this.dy = 1;
@@ -19,27 +20,14 @@ class Obstacle extends GameObjects{
     }
 
     update(timePassedSinceLastRender){
-        this.y += this.dy * timePassedSinceLastRender * this.velocity;
+        this.y += this.dy * timePassedSinceLastRender * this.velocity * this.playerVelocity;
     }
 
     render(){
         // call the super method to render box
         super.render();
 
-        ctx.save();
-
-        ctx.translate(this.x, this.y);
-
-        ctx.fillStyle = "red";
-
-        ctx.fillRect(
-            -this.width/2,
-            -this.height/2,
-            this.width,
-            this.height
-        )
-
-        /*
+        ctx.translate(this.x, this.y); 
         ctx.drawImage(
             this.img,
             -this.width/2,
@@ -47,17 +35,9 @@ class Obstacle extends GameObjects{
             this.width,
             this.height
         )
-        */
-
-        ctx.restore();
 
         ctx.resetTransform();
-
-
     }
-
-
-
 }
 
 export default Obstacle;
