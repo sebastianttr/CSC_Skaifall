@@ -17,6 +17,18 @@ let SceneMain = function(){
                     src:"./Assets/images/player.png",
                     type: Image
                 },
+                flameSprite:{
+                    src:"./Assets/images/sprites/flames_sprite.png",
+                    type: Image,
+                    extras:{
+                        frames: 6,
+                        fps: 24,
+                        frameSize:{
+                            height: 90,
+                            width: 72
+                        }
+                    }
+                },
                 obstacle1:{
                     src:"./Assets/images/obstacles/meteor_1.png",
                     type: Image
@@ -62,12 +74,19 @@ let SceneMain = function(){
             },
             init(){
 
+                
+
                 this.player = new Player(
                     100,
                     750,
                     this.assets.playerImg.naturalWidth/2,
                     this.assets.playerImg.naturalHeight/2,
-                    this.assets.playerImg
+                    this.assets.playerImg,
+                    this.assets.flameSprite,
+                    {
+                        contain:true,
+                        mouseInteraction:true
+                    }
                 )
 
                 this.gameObjects.push(this.player)
@@ -79,16 +98,7 @@ let SceneMain = function(){
 
                 this.objectSpawner = new ObjectSpawner(objectSpawnerOptions);
 
-                //run timed spawner
-
                 this.spawnNewObstacle();
-
-
-                /*
-                setTimeout(()=> {
-                    this.switchScene("SceneStart");
-                },2000)
-                */
             },
             update(timePassedSinceLastRender){
                 let objToRemove = [];
@@ -177,9 +187,6 @@ let SceneMain = function(){
                 )
 
                 ctx.restore();
-
-
-
             },
             destroy(){
                 this.gameObjects.length = 0;

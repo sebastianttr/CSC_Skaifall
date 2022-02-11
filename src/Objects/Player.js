@@ -1,8 +1,9 @@
 import GameObjects from "./GenericObjects.js";
-import {ctx,CONFIG,map, canvas} from "../globals.js"
+import {ctx,CONFIG,map, canvas} from "../globals.js";
+import Sprite from "../Utils/Sprite.js";
 
 class Player extends GameObjects{
-    constructor(x,y,width,height,assets){
+    constructor(x,y,width,height,assets,flameSprite,options){
         super(x, y, width, height, null, CONFIG);
 
         this.dx = 0;
@@ -13,6 +14,15 @@ class Player extends GameObjects{
         this.gravity = 0.5
         this.velocityX = 0.5;
         this.velocityY = 0.5;
+        this.flameSprite = flameSprite;
+        this.sprite = new Sprite(
+            this.flameSprite,
+            this.flameSprite.extras.frames,
+            this.flameSprite.extras.fps,
+            this.flameSprite.extras.frameSize,
+        )
+        // tells if it should only work within a container (see update function)
+        this.options = options
 
         this.assets = assets;
         this.translateState = "idle"
@@ -48,16 +58,19 @@ class Player extends GameObjects{
 
         // calculate the position X and Y respectively
 
-        this.velocityX = (this.mousePosition.x) - this.x
-        this.x += this.velocityX * timePassedSinceLastRender / 100
-
-        //console.log(this.velocityX)
-
-        this.velocityY = (this.mousePosition.y) - this.y
-        this.y += timePassedSinceLastRender / 100 * this.velocityY;
+        if(this.options.mouseInteraction){
+            this.velocityX = (this.mousePosition.x) - this.x
+            this.x += this.velocityX * timePassedSinceLastRender / 100
+    
+            //console.log(this.velocityX)
+    
+            this.velocityY = (this.mousePosition.y) - this.y
+            this.y += timePassedSinceLastRender / 100 * this.velocityY;
+        }
 
         // this is great for the difficulty of the game
-        if(this.y < 600 || this.y > 750){
+        if(this.options.contain && (this.y < 600 || this.y > 750)){
+            console.log("setting old y")
             this.y = this.oldY
         }
     }
@@ -79,7 +92,23 @@ class Player extends GameObjects{
             this.width, // destination width
             this.height // destination height
         );
-  
+        
+        // get frame for the flame
+        let flameFrame = this.sprite.getSpriteFrame("up");
+
+        // draw the sprite
+        ctx.drawImage(
+            this.flameSprite,
+            flameFrame.sourceX,
+            flameFrame.sourceY,
+            flameFrame.sourceWidth,
+            flameFrame.sourceHeight,
+            -this.width / 1.75, // destination x
+            this.height / 6, // destination y
+            flameFrame.sourceWidth * 0.7,
+            flameFrame.sourceHeight * 0.7, // destination height
+        )
+
         //reset the transform
         ctx.resetTransform();
     }
