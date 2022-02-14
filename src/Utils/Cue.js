@@ -112,11 +112,26 @@ class Cue {
         this.#requestAnimationFrameID = requestAnimationFrame(this.loop);
     }
 
-    switchScene(sceneName){
+
+    switchSceneWithProps(sceneName,props){
+        console.log("In 2")
         this.#destroy();
         this.stop();
         let customEvent = new CustomEvent("switchScene")
-        customEvent.data = sceneName;
+        customEvent.data = {
+            sceneName:sceneName,
+            props:props
+        }
+        canvas.dispatchEvent(customEvent)
+    }
+
+    switchScene(sceneName){
+        console.log("In 1")
+
+        this.#destroy();
+        this.stop();
+        let customEvent = new CustomEvent("switchScene")
+        customEvent.data = sceneName
         canvas.dispatchEvent(customEvent)
     }
 }

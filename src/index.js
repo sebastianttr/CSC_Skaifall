@@ -9,15 +9,15 @@ let sceneSwitcher;
 let scenes = [
     {
         name:"SceneStart",
-        scene: new SceneStart(),
+        scene: SceneStart,
     },
     {
         name:"SceneMain",
-        scene: new SceneMain(),
+        scene: SceneMain,
     },
     {
         name:"SceneEnd",
-        scene: new SceneEnd(),
+        scene: SceneEnd,
     }
 ]
 
@@ -25,6 +25,14 @@ const app = () => {
     // set canvas size
     canvas.setAttribute("width",CONFIG.canvas.width);
     canvas.setAttribute("height",CONFIG.canvas.height);
+
+    // also set the container because of the video
+    document.getElementById("container").style.width = CONFIG.canvas.width + "px";
+    document.getElementById("container").style.height = CONFIG.canvas.height  + "px";
+
+    console.log(document.getElementById("container").style.width)
+
+
 
     sceneSwitcher = new SceneSwitcher();
 

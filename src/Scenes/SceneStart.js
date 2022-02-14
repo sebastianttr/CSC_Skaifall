@@ -4,7 +4,7 @@ import Button from "../UIKit/Button.js";
 import Player from "../Objects/Player.js";
 import Dialog from "../UIKit/Dialog.js";
 
-let SceneStart = function(){
+let SceneStart = function(props){
     return new Cue(
         {
             preloads:{
@@ -41,14 +41,19 @@ let SceneStart = function(){
                 nextSceneFlag:false,
                 textOpacity: 1,
                 backgroundVideo:null,
-                uiElements:[]
+                uiElements:[],
+                highScore: null
             },
             init(){
+                /*
                 this.backgroundVideo = document.createElement("video"); // create a video element
                 this.backgroundVideo.src = "./Assets/videos/star_meteor_shower.mp4";
                 this.backgroundVideo.loop = true;
                 this.backgroundVideo.autoplay = true;
+                */
                 //this.backgroundVideo.play();
+
+                document.getElementsByTagName("video")[0].style.display = "block";
 
                 this.player = new Player(
                     CONFIG.canvas.width/2,
@@ -94,7 +99,7 @@ let SceneStart = function(){
                 this.howToPlayDialog = new Dialog(
                     CONFIG.canvas.width/2,
                     CONFIG.canvas.height/2,
-                    CONFIG.canvas.width * 0.8,
+                    CONFIG.canvas.width * 0.9,
                     CONFIG.canvas.height*0.5,
                     "How to Play",
                     "Use the mouse cursor to steer Skai and avoid the meteors. If you hit the meteor, you lose the game",
@@ -102,7 +107,7 @@ let SceneStart = function(){
                         new Button(
                             0,
                             0,
-                            300,
+                            330,
                             80,
                             "I Understand!",
                             25,
@@ -118,6 +123,9 @@ let SceneStart = function(){
                 this.uiElements.push(this.startButton);
                 this.uiElements.push(this.guideButton);
                 this.uiElements.push(this.howToPlayDialog);
+                
+
+                this.highScore = Number(localStorage.getItem("highscore"));
 
                 this.setKeyEventListeners();
             },
@@ -182,6 +190,43 @@ let SceneStart = function(){
                     CONFIG.canvas.height/4 + 55
                 )
 
+
+                ctx.fillStyle = "green"
+                ctx.font = "20px Gamefont";
+
+                ctx.fillText(
+                    "High Score ",
+                    CONFIG.canvas.width/2,
+                    CONFIG.canvas.height/2 + 300
+                )
+
+
+                ctx.save();
+
+                ctx.fillStyle = "white";
+                ctx.font = "40px Gamefont";
+                
+                let amountOfDigits = this.getNumNDigits(this.highScore);
+                
+                ctx.beginPath();
+                ctx.fillRect(
+                    CONFIG.canvas.width/2 - (20 * amountOfDigits),
+                    CONFIG.canvas.height/2 + 320,
+                    (40 * amountOfDigits),
+                    40
+                )
+
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+
+                ctx.fillText(
+                    this.highScore,
+                    CONFIG.canvas.width/2,
+                    CONFIG.canvas.height/2 + 355,
+                )
+
+                ctx.restore();
+            
                 // render uiElements
                 this.uiElements.forEach((el) => {
                     el.render();
@@ -196,9 +241,9 @@ let SceneStart = function(){
                     CONFIG.canvas.width,
                     CONFIG.canvas.height
                 )
-
             },
             destroy(){
+                document.getElementsByTagName("video")[0].style.display = "none";
                 this.removeKeyEventListeners();
                 this.startButton.removeEventListeners();
                 this.guideButton.removeEventListeners();
@@ -266,6 +311,9 @@ let SceneStart = function(){
                         1280
                     )
                     ctx.restore();
+                },
+                getNumNDigits(num){
+                    return num.toString().length;
                 }
             }
         }

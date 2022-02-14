@@ -31,7 +31,7 @@ class Player extends GameObjects{
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
 
-        this.health = 3;
+        this.health = 1;
 
         //console.log(this.assets.run.extras);
 
@@ -70,7 +70,7 @@ class Player extends GameObjects{
 
         // this is great for the difficulty of the game
         if(this.options.contain && (this.y < 600 || this.y > 750)){
-            console.log("setting old y")
+            //console.log("setting old y")
             this.y = this.oldY
         }
     }

@@ -13,6 +13,11 @@ body {
   background: linear-gradient(135deg, #c2c500, #00c5ccd0);
   padding: 0%;
   margin: 0%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 100vh;
 }
 
 h1,
@@ -25,12 +30,18 @@ h6 {
   margin: 0;
 }
 
-.container {
+#container {
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+#container video {
+  position: absolute;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
 }
 
 canvas {
@@ -43,7 +54,6 @@ canvas {
 .misc {
   margin: 10px;
   background-color: beige;
-  border-radius: 5px;
   font-size: 30px;
   width: 100vh;
   text-align: center;

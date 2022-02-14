@@ -2,7 +2,8 @@ import Cue from "../Utils/Cue.js";
 import {CONFIG,ctx} from "../globals.js";
 import Button from "../UIKit/Button.js";
 
-let SceneEnd = function(){
+let SceneEnd = function(props){
+    console.log("Your score is ",props)
     return new Cue(
         {
             preloads:{
@@ -19,7 +20,8 @@ let SceneEnd = function(){
                 backToMenuButton:null,
                 restartGameFlag: false,
                 backToMenuFlag: false,
-                textOpacity: 1
+                textOpacity: 1,
+                highScore: null
             },
             init(){
                 this.restartButton = new Button(
@@ -45,6 +47,11 @@ let SceneEnd = function(){
                         this.backToMenuFlag = true;
                     }
                 )
+
+                this.highScore = Number(localStorage.getItem("highscore"));
+                if(props > this.highScore){
+                    localStorage.setItem("highscore",props);
+                }
 
                 this.setKeyEventListeners();
             },
@@ -95,14 +102,34 @@ let SceneEnd = function(){
                 ctx.fillText(
                     "Oh well,",
                     CONFIG.canvas.width/2,
-                    CONFIG.canvas.height/4
+                    55
                 )
+
 
                 ctx.fillText(
                     "You lost.",
                     CONFIG.canvas.width/2,
-                    CONFIG.canvas.height/4 + 55
+                    100
                 )
+
+                ctx.font = "20px Gamefont"
+
+                ctx.fillText(
+                    "Your score:",
+                    CONFIG.canvas.width/2,
+                    200
+                )
+
+                ctx.fillStyle = "green"
+
+                if(this.highScore < props){
+                    ctx.fillText(
+                        "! High Score !",
+                        CONFIG.canvas.width/2,
+                        310
+                    )
+                }
+
 
                 ctx.restore();
 
@@ -117,7 +144,31 @@ let SceneEnd = function(){
                     CONFIG.canvas.height
                 )
 
+                ctx.save();
+
+                ctx.fillStyle = "white";
+                ctx.font = "40px Gamefont";
                 
+                let amountOfDigits = this.getNumNDigits(props);
+                
+                ctx.beginPath();
+                ctx.fillRect(
+                    CONFIG.canvas.width/2 - (20 * amountOfDigits),
+                    225,
+                    (40 * amountOfDigits),
+                    40
+                )
+
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+
+                ctx.fillText(
+                    props,
+                    CONFIG.canvas.width/2,
+                    260,
+                )
+
+                ctx.restore();
             },
             destroy(){
                 this.removeKeyEventListeners();
@@ -138,6 +189,9 @@ let SceneEnd = function(){
                 removeKeyEventListeners(){
                     document.onkeydown = null;
                     document.onkeyup = null;
+                },
+                getNumNDigits(num){
+                    return num.toString().length;
                 }
             }
         }

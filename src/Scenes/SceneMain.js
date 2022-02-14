@@ -5,7 +5,7 @@ import Obstacle from "../Objects/Obstacle.js"
 import ObjectSpawner from "../Utils/ObjectSpawner.js"
 import { checkCollisionBetween } from "../Utils/CollisionDetection.js";
 
-let SceneMain = function(){
+let SceneMain = function(props){
     return new Cue(
         {
             preloads:{
@@ -73,9 +73,6 @@ let SceneMain = function(){
                 difficultyLevel:0
             },
             init(){
-                console.log(this.setupProperties)
-
-
                 this.player = new Player(
                     100,
                     750,
@@ -122,7 +119,7 @@ let SceneMain = function(){
                     }
 
                     if(!(el instanceof Player) && checkCollisionBetween(el,this.player)){
-                        console.log("Colliding")
+                        //console.log("Colliding")
                         // if not dead
                         if(this.player.health > 0)  this.player.health -= 1;
                         //if dead
@@ -139,7 +136,7 @@ let SceneMain = function(){
 
                 // do something if the player died
                 if(this.playerDiedFlag){
-                    this.switchScene("SceneEnd");
+                    this.switchSceneWithProps("SceneEnd",this.score);
                 }
             },
             render(){
@@ -189,7 +186,7 @@ let SceneMain = function(){
                 ctx.restore();
             },
             destroy(){
-                console.log("stopping spawn")
+                //console.log("stopping spawn")
                 this.gameObjects.length = 0;
                 this.player.removeEventListeners();
                 this.stopSpawning();
@@ -198,7 +195,7 @@ let SceneMain = function(){
                 spawnNewObstacle(){
                     if(this.objectSpawner != null)
                         this.objectSpawner.spawnAfterTime(()=>{
-                            console.log("creating obstacle")
+                            //console.log("creating obstacle")
                             this.gameObjects.push(this.getRandomObstacle())
                             this.spawnNewObstacle();
                         })

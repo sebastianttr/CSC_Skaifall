@@ -32,7 +32,7 @@ class Dialog extends GenericObjects{
     }
 
     update(timePassedSinceLastRender){
-        console.log(this.calcY)
+        //console.log(this.calcY)
 
         if(this.isVisible && this.y >= this.setY + CONFIG.canvas.height/2 - 200){
             let mappedVal = map(1-Math.exp(-0.03*this.calcY+1),0,1,620,1280);
@@ -45,7 +45,7 @@ class Dialog extends GenericObjects{
             this.y = Math.round(mappedVal);
             this.calcY += 0.5;
             
-            console.log("animating down");
+            //console.log("animating down");
         }
         else {
             if(this.calcY >= 100){
