@@ -36,7 +36,7 @@ class Button extends GenericObjects{
     }
 
     init(){
-        this.#setEventListeners();
+        this.setEventListeners();
     }
 
     update(){
@@ -130,7 +130,7 @@ class Button extends GenericObjects{
         this.isClicked = false;
     }
 
-    #setEventListeners(){
+    setEventListeners(){
         canvas.addEventListener("mousemove",this.handleMouseMove,true);       
         canvas.addEventListener("mousedown",this.handleMouseClickDown,true);
         canvas.addEventListener("mouseup",this.handleMouseClickUp,true);

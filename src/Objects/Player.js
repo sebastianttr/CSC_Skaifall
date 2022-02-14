@@ -157,8 +157,6 @@ class Player extends GameObjects{
         document.removeEventListener("keyup", this.handleKeyUp,true);
         canvas.removeEventListener("mousemove",this.handleMousePosition,true);
         canvas.removeEventListener("touchmove",this.handleMousePosition,true);
-
-    
     }
 }
 

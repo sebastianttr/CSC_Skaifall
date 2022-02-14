@@ -73,8 +73,8 @@ let SceneMain = function(){
                 difficultyLevel:0
             },
             init(){
+                console.log(this.setupProperties)
 
-                
 
                 this.player = new Player(
                     100,
@@ -189,6 +189,7 @@ let SceneMain = function(){
                 ctx.restore();
             },
             destroy(){
+                console.log("stopping spawn")
                 this.gameObjects.length = 0;
                 this.player.removeEventListeners();
                 this.stopSpawning();
@@ -197,7 +198,7 @@ let SceneMain = function(){
                 spawnNewObstacle(){
                     if(this.objectSpawner != null)
                         this.objectSpawner.spawnAfterTime(()=>{
-                            //console.log("creating obstacle")
+                            console.log("creating obstacle")
                             this.gameObjects.push(this.getRandomObstacle())
                             this.spawnNewObstacle();
                         })

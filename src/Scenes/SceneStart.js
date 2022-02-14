@@ -2,6 +2,7 @@ import Cue from "../Utils/Cue.js";
 import {CONFIG,ctx} from "../globals.js";
 import Button from "../UIKit/Button.js";
 import Player from "../Objects/Player.js";
+import Dialog from "../UIKit/Dialog.js";
 
 let SceneStart = function(){
     return new Cue(
@@ -36,15 +37,18 @@ let SceneStart = function(){
                 currentKeys:{},
                 startButton: null,
                 guideButton:null,
+                howToPlayDialog:null,
                 nextSceneFlag:false,
                 textOpacity: 1,
                 backgroundVideo:null,
+                uiElements:[]
             },
             init(){
                 this.backgroundVideo = document.createElement("video"); // create a video element
                 this.backgroundVideo.src = "./Assets/videos/star_meteor_shower.mp4";
                 this.backgroundVideo.loop = true;
-                this.backgroundVideo.play();
+                this.backgroundVideo.autoplay = true;
+                //this.backgroundVideo.play();
 
                 this.player = new Player(
                     CONFIG.canvas.width/2,
@@ -69,7 +73,7 @@ let SceneStart = function(){
                     "Play",
                     30,
                     () => {
-                        console.log("next")
+                        //console.log("next")
                         this.nextSceneFlag = true;
                     }
                 );
@@ -82,9 +86,38 @@ let SceneStart = function(){
                     "How to Play",
                     25,
                     () => {
-                        console.log("Open dialog here!")
+                        //console.log("Open dialog here!")
+                        this.howToPlayDialog.showDialog();
                     }
+                );
+
+                this.howToPlayDialog = new Dialog(
+                    CONFIG.canvas.width/2,
+                    CONFIG.canvas.height/2,
+                    CONFIG.canvas.width * 0.8,
+                    CONFIG.canvas.height*0.5,
+                    "How to Play",
+                    "Use the mouse cursor to steer Skai and avoid the meteors. If you hit the meteor, you lose the game",
+                    [
+                        new Button(
+                            0,
+                            0,
+                            300,
+                            80,
+                            "I Understand!",
+                            25,
+                            () => {
+                                //console.log("I Understand pressed!")
+                                this.howToPlayDialog.closeDialog();
+                            }
+                        )
+                    ]
                 )
+
+                // push all these elements to render and update subsequently
+                this.uiElements.push(this.startButton);
+                this.uiElements.push(this.guideButton);
+                this.uiElements.push(this.howToPlayDialog);
 
                 this.setKeyEventListeners();
             },
@@ -108,8 +141,9 @@ let SceneStart = function(){
                 }
 
                 
-                this.startButton.update();
-                this.guideButton.update();
+                this.uiElements.forEach((el) => {
+                    el.update();
+                });
             },
             render(){
                 //clear and reset canvas
@@ -117,7 +151,7 @@ let SceneStart = function(){
                 ctx.clearRect(0,0,CONFIG.canvas.width,CONFIG.canvas.height);
 
                 //draw background
-                this.drawVideoFrame();
+                //this.drawVideoFrame();
 
                 // save context so we can change the context styles
                 ctx.save();
@@ -148,8 +182,10 @@ let SceneStart = function(){
                     CONFIG.canvas.height/4 + 55
                 )
 
-                this.startButton.render();
-                this.guideButton.render();
+                // render uiElements
+                this.uiElements.forEach((el) => {
+                    el.render();
+                });
 
                 ctx.restore();
 
