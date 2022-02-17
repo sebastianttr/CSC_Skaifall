@@ -1,6 +1,23 @@
 import {CONFIG,ctx} from "../globals.js"
 
-export default class GameObjects {
+
+/**
+ * 
+ * GameObjects class. This class has some properties which all other renderable game object 
+ * 
+ */
+
+class GameObjects {
+    
+    /**
+     * 
+     * Constructor takes care of the initialisation of the properties 
+     * 
+     * @param  {Number} x
+     * @param  {Number} y
+     * @param  {Number} width
+     * @param  {Number} height
+     */
     constructor(x, y, width, height){
         this.x = x;
         this.y = y;
@@ -8,9 +25,14 @@ export default class GameObjects {
         this.height = height;
     }
 
+    // init and update are empty :/
     init() {}
     update() {}
 
+
+    /**
+     * render method. Renders the bounding box
+     */
     render() {
         // draw bounding box rectangle
         if (CONFIG.debug) {
@@ -22,8 +44,14 @@ export default class GameObjects {
             ctx.restore();
             ctx.resetTransform();
         }
-      }
+    }
 
+    /**
+     * 
+     * getBoudingBox function which return the data of the bounding box
+     * 
+     * @returns {Object} object containing position data and dimension data.
+     */
     getBoundingBox(){
         return {
             x: this.x - this.width / 2,
@@ -33,3 +61,5 @@ export default class GameObjects {
         };
     }
 }
+
+export default GameObjects;

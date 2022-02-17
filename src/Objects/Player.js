@@ -2,12 +2,32 @@ import GameObjects from "./GenericObjects.js";
 import {ctx,CONFIG,map, canvas} from "../globals.js";
 import Sprite from "../Utils/Sprite.js";
 
+/**
+ * 
+ * Player class. Draws the player based on the mouse position with some physics
+ * 
+ * @extends
+ * 
+ */
 class Player extends GameObjects{
+
+    
+    /**
+     * 
+     * Constructer set all the states. 
+     * 
+     * @param  {Number} x
+     * @param  {Number} y
+     * @param  {Number} width
+     * @param  {Number} height
+     * @param  {Object} assets
+     * @param  {Image} flameSprite
+     * @param  {Object} options
+     */
     constructor(x,y,width,height,assets,flameSprite,options){
         super(x, y, width, height, null, CONFIG);
 
-        this.dx = 0;
-        this.dy = 0;
+ 
         this.velocity = 0.5;
         this.currentKeys = {};
         this.lastDirection = 1;
@@ -15,49 +35,46 @@ class Player extends GameObjects{
         this.velocityX = 0.5;
         this.velocityY = 0.5;
         this.flameSprite = flameSprite;
+        this.options = options
+        this.assets = assets;
+        this.translateState = "idle"
+        this.health = 1;
+        this.mousePosition = {
+            x:0,
+            y:0
+        }
+
+        // create an new instance of Sprite to draw the flames
         this.sprite = new Sprite(
             this.flameSprite,
             this.flameSprite.extras.frames,
             this.flameSprite.extras.fps,
             this.flameSprite.extras.frameSize,
         )
-        // tells if it should only work within a container (see update function)
-        this.options = options
+        
 
-        this.assets = assets;
-        this.translateState = "idle"
+      
 
-        this.handleMousePosition = this.handleMousePosition.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-
-        this.health = 1;
-
-        //console.log(this.assets.run.extras);
-
-        this.mousePosition = {
-            x:0,
-            y:0
-        }
-
+    
         this.init();
     }
 
     init(){
+        
+        // bind the current context -> so we can access the properties within the callbacks
+        this.handleMousePosition = this.handleMousePosition.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+
         // set key event listeners
         this.setEventListeners();
     }
 
     update(timePassedSinceLastRender){
-        // set the value of dx (along the x axis)
-        if (this.currentKeys["ArrowRight"] || this.currentKeys["KeyD"]) this.dx = 1;
-        else if (this.currentKeys["ArrowLeft"] || this.currentKeys["KeyA"]) this.dx = -1;
-        else this.dx = 0;
-
+        // save the old y. for the upper/lower boundary
         this.oldY = this.y
 
-        // calculate the position X and Y respectively
-
+        // calculate the position X and Y respectively, check if it should move with the mouse
         if(this.options.mouseInteraction){
             this.velocityX = (this.mousePosition.x) - this.x
             this.x += this.velocityX * timePassedSinceLastRender / 100
@@ -68,7 +85,7 @@ class Player extends GameObjects{
             this.y += timePassedSinceLastRender / 100 * this.velocityY;
         }
 
-        // this is great for the difficulty of the game
+        // boundaries. also check if it should be within a boundary. 
         if(this.options.contain && (this.y < 600 || this.y > 750)){
             //console.log("setting old y")
             this.y = this.oldY
@@ -113,48 +130,32 @@ class Player extends GameObjects{
         ctx.resetTransform();
     }
 
-    getImageSpriteCoordinate(sprite) {
-        let frameX = Math.floor(
-            ((performance.now() / 1000) * sprite.fps) % sprite.frames
-        );
-
-        let coords = {
-            sourceX: frameX * sprite.frameSize.width, // TODO
-            sourceY: 0,
-            sourceWidth: sprite.frameSize.width,
-            sourceHeight: sprite.frameSize.height,
-        };
-
-        return coords;
-    }
-
-    handleKeyDown(ev){
-        if (ev.code.startsWith("Arrow") || ev.code === "Space") {
-            ev.preventDefault();
-        }
-        this.currentKeys[ev.code] = true;
-    }
-
-    handleKeyUp(ev){
-        this.currentKeys[ev.code] = false;
-    }
-
+    /**
+     * 
+     * Mouse move position event handler 
+     * 
+     * @param {MouseEvent} e event 
+     */
     handleMousePosition(ev){
+        // get the absolute position of the mouse
         let clientRect = canvas.getBoundingClientRect();
+        // calculate the correct mouse position inside the canvas
         this.mousePosition.x = Math.round(ev.clientX - clientRect.left);
         this.mousePosition.y = Math.round(ev.clientY - clientRect.top);  
     }
 
+    /**
+     * A function to set the event listener
+     */
     setEventListeners(){
-        document.addEventListener("keydown", this.handleKeyDown,true);
-        document.addEventListener("keyup", this.handleKeyUp,true);
         canvas.addEventListener("mousemove",this.handleMousePosition,true);
         canvas.addEventListener("touchmove",this.handleMousePosition,true);
     }
 
+    /**
+     * A function to reset the event listener -> usually called by the destroy() hook
+     */
     removeEventListeners(){
-        document.removeEventListener("keydown", this.handleKeyDown,true);
-        document.removeEventListener("keyup", this.handleKeyUp,true);
         canvas.removeEventListener("mousemove",this.handleMousePosition,true);
         canvas.removeEventListener("touchmove",this.handleMousePosition,true);
     }

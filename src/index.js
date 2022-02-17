@@ -6,6 +6,7 @@ import {SceneEnd} from "./Scenes/SceneEnd.js";
 
 let sceneSwitcher;
 
+// a collection of scenes -> scene property is just a type so that the scenes can be reinstantiated -> deletes everything
 let scenes = [
     {
         name:"SceneStart",
@@ -30,20 +31,18 @@ const app = () => {
     document.getElementById("container").style.width = CONFIG.canvas.width + "px";
     document.getElementById("container").style.height = CONFIG.canvas.height  + "px";
 
-    console.log(document.getElementById("container").style.width)
-
-
-
+    // setup scene switcher
     sceneSwitcher = new SceneSwitcher();
 
+    //add the scenes to the sceneSwitcher 
     scenes.forEach((item,index) => {
         item.id = index;
         sceneSwitcher.addScene(item)
     })
 
+    // set the scene and run.
     sceneSwitcher.setCurrentScene("SceneStart");
     sceneSwitcher.run();
-    
 }
 
 window.addEventListener("load",() => {

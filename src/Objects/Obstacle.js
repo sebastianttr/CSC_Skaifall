@@ -1,8 +1,27 @@
 import GameObjects from "./GenericObjects.js";
 import {ctx, CONFIG} from "../globals.js"
 
+
+/**
+ * 
+ * Obstacle class. A class which draws a falling obstacle.
+ * 
+ * @extends GameObjects
+ * 
+ */
 class Obstacle extends GameObjects{
 
+    
+    /**
+     * 
+     * Constructor initializes the properties and calls the init method
+     * 
+     * @param  {Number} x
+     * @param  {Number} y
+     * @param  {Number} width
+     * @param  {Number} height
+     * @param  {Number} img
+     */
     constructor(x,y,width,height, img){
         super(x,y,width,height);
         this.img = img;
@@ -15,14 +34,24 @@ class Obstacle extends GameObjects{
         this.init();
     }
 
+    /**
+     * Init function to initialise all the states
+     */
     init(){
-        // do nothing
+        // do nothing ._.
     }
 
+    /**
+     * Update function to update all the states. 
+     * @param  {Number} timePassedSinceLastRender
+     */
     update(timePassedSinceLastRender){
         this.y += this.dy * timePassedSinceLastRender * this.velocity * this.playerVelocity;
     }
 
+    /**
+     * render function
+     */
     render(){
         // call the super method to render box
         super.render();
