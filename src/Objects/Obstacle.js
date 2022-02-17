@@ -1,6 +1,6 @@
 import GameObjects from "./GenericObjects.js";
-import {ctx, CONFIG} from "../globals.js"
-
+import {ctx, CONFIG,map} from "../globals.js"
+import Particles from "./Particles.js";
 
 /**
  * 
@@ -11,7 +11,6 @@ import {ctx, CONFIG} from "../globals.js"
  */
 class Obstacle extends GameObjects{
 
-    
     /**
      * 
      * Constructor initializes the properties and calls the init method
@@ -22,7 +21,7 @@ class Obstacle extends GameObjects{
      * @param  {Number} height
      * @param  {Number} img
      */
-    constructor(x,y,width,height, img){
+    constructor(x,y,width,height, img,particleImages){
         super(x,y,width,height);
         this.img = img;
 
@@ -30,6 +29,26 @@ class Obstacle extends GameObjects{
         this.velocity = 0.35;
         this.dx = 0;
         this.dy = 1;
+
+        this.isHit = false;
+        this.isStill = false;
+
+        this.particleImages = particleImages;
+        this.particles = [];
+        
+
+        this.particleImages.forEach(item => {
+            this.particles.push(
+                new Particles(
+                    item.naturalWidth,
+                    item.naturalHeight,
+                    map(Math.random(),0,1,-10,30),
+                    map(Math.random(),0,1,-10,30),
+                    item
+                )
+            )
+        })
+
 
         this.init();
     }
@@ -46,7 +65,19 @@ class Obstacle extends GameObjects{
      * @param  {Number} timePassedSinceLastRender
      */
     update(timePassedSinceLastRender){
-        this.y += this.dy * timePassedSinceLastRender * this.velocity * this.playerVelocity;
+
+        // if it is not hit : keep calculating the you
+        if(!this.isHit && !this.isStill){
+            this.y += this.dy * timePassedSinceLastRender * this.velocity * this.playerVelocity;
+        }
+        // if the obstacle is hit : update the particle. 
+        else {
+            //console.log("updating");
+            this.particles.forEach(el => {
+                el.update(timePassedSinceLastRender);
+            })
+        }
+
     }
 
     /**
@@ -55,17 +86,37 @@ class Obstacle extends GameObjects{
     render(){
         // call the super method to render box
         super.render();
-
         ctx.translate(this.x, this.y); 
-        ctx.drawImage(
-            this.img,
-            -this.width/2,
-            -this.height/2,
-            this.width,
-            this.height
-        )
+
+        if(!this.isHit){
+            
+            ctx.drawImage(
+                this.img,
+                -this.width/2,
+                -this.height/2,
+                this.width,
+                this.height
+            )
+        }
+        // if it is not hit
+        else {
+            //console.log("render");
+            /*
+            ctx.drawImage(
+                this.img,
+                -this.width/2,
+                -this.height/2,
+                this.width,
+                this.height
+            )
+            */
+            this.particles.forEach(el => {
+                el.render();
+            })
+        }
 
         ctx.resetTransform();
+        
     }
 }
 

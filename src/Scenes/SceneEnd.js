@@ -1,6 +1,7 @@
 import Cue from "../Utils/Cue.js";
 import {CONFIG,ctx} from "../globals.js";
 import Button from "../UIKit/Button.js";
+import Obstacle from "../Objects/Obstacle.js";
 
 let SceneEnd = function(props){
     console.log("Your score is ",props)
@@ -10,7 +11,91 @@ let SceneEnd = function(props){
                 backgroundImg:{
                     src:"./Assets/images/background_space.png",
                     type: Image
-                }
+                },
+                obstacle1:{
+                    src:"./Assets/images/obstacles/meteor_1.png",
+                    type: Image
+                },
+                particle1:{
+                    src:"./Assets/images/obstacles/particles/p1.png",
+                    type:Image,
+                    extras:{
+                        x:-15,
+                        y:-35,          
+                    }
+                },
+                particle2:{
+                    src:"./Assets/images/obstacles/particles/p2.png",
+                    type:Image,
+                    extras:{
+                        x:-29,
+                        y:-30,          
+                    }
+                },
+                particle3:{
+                    src:"./Assets/images/obstacles/particles/p3.png",
+                    type:Image,
+                    extras:{
+                        x:-33,
+                        y:-11,          
+                    }
+                },
+                particle4:{
+                    src:"./Assets/images/obstacles/particles/p4.png",
+                    type:Image,
+                    extras:{
+                        x:-32,
+                        y:8,          
+                    }
+                },
+                particle5:{
+                    src:"./Assets/images/obstacles/particles/p5.png",
+                    type:Image,
+                    extras:{
+                        x:-13,
+                        y:11,          
+                    }
+                },
+                particle6:{
+                    src:"./Assets/images/obstacles/particles/p6.png",
+                    type:Image,
+                    extras:{
+                        x:5,
+                        y:0,          
+                    }
+                },
+                particle7:{
+                    src:"./Assets/images/obstacles/particles/p7.png",
+                    type:Image,
+                    extras:{
+                        x:4,
+                        y:-30,          
+                    }
+                },
+                particle8:{
+                    src:"./Assets/images/obstacles/particles/p8.png",
+                    type:Image,
+                    extras:{
+                        x:-2,
+                        y:-24,          
+                    }
+                },
+                particle9:{
+                    src:"./Assets/images/obstacles/particles/p9.png",
+                    type:Image,
+                    extras:{
+                        x:-15,
+                        y:0,          
+                    }
+                },
+                particle10:{
+                    src:"./Assets/images/obstacles/particles/p10.png",
+                    type:Image,
+                    extras:{
+                        x:-15,
+                        y:-26,          
+                    }
+                },
             },
             setupProperties:{
                 gameObjects:[],
@@ -21,7 +106,8 @@ let SceneEnd = function(props){
                 restartGameFlag: false,
                 backToMenuFlag: false,
                 textOpacity: 1,
-                highScore: null
+                highScore: null,
+                testObstacle: null
             },
             init(){
                 this.restartButton = new Button(
@@ -48,6 +134,18 @@ let SceneEnd = function(props){
                     }
                 )
 
+                this.testObstacle = new Obstacle(
+                    150,
+                    250,
+                    this.assets[`obstacle1`].naturalWidth,
+                    this.assets[`obstacle1`].naturalHeight,
+                    this.assets[`obstacle1`],
+                    this.getParticlesArray(),
+                )
+
+                this.testObstacle.isStill = true;
+                this.testObstacle.isHit = true;
+
                 this.highScore = Number(localStorage.getItem("highscore"));
                 if(props > this.highScore){
                     localStorage.setItem("highscore",props);
@@ -55,7 +153,7 @@ let SceneEnd = function(props){
 
                 this.setKeyEventListeners();
             },
-            update(){
+            update(timePassedSinceLastRender){
                 if(this.restartGameFlag && !this.backToMenuFlag){
                     if(this.restartButton.opacity <= 0){
                         this.switchScene("SceneMain")
@@ -75,6 +173,7 @@ let SceneEnd = function(props){
 
                 this.restartButton.update();
                 this.backToMenuButton.update();
+                this.testObstacle.update(timePassedSinceLastRender);
             },
             render(){
                 //clear and reset canvas
@@ -135,6 +234,7 @@ let SceneEnd = function(props){
 
                 this.restartButton.render();
                 this.backToMenuButton.render();
+                this.testObstacle.render();
 
                 ctx.fillStyle = `rgba(0, 0, 0, ${0})`
                 ctx.fillRect(
@@ -149,6 +249,7 @@ let SceneEnd = function(props){
                 ctx.fillStyle = "white";
                 ctx.font = "40px Gamefont";
                 
+                
                 let amountOfDigits = this.getNumNDigits(props);
                 
                 ctx.beginPath();
@@ -158,10 +259,10 @@ let SceneEnd = function(props){
                     (40 * amountOfDigits),
                     40
                 )
-
+                   
                 ctx.fillStyle = "black";
                 ctx.textAlign = "center";
-
+                
                 ctx.fillText(
                     props,
                     CONFIG.canvas.width/2,
@@ -192,6 +293,15 @@ let SceneEnd = function(props){
                 },
                 getNumNDigits(num){
                     return num.toString().length;
+                },
+                getParticlesArray(){
+                    let particlesArray = [];
+
+                    Object.keys(this.assets).filter(el => el.startsWith("particle")).forEach((item)=>{
+                        particlesArray.push(this.assets[item])
+                    })
+
+                    return particlesArray;
                 }
             }
         }

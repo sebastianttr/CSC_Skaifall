@@ -63,8 +63,6 @@ class Player extends GameObjects{
         
         // bind the current context -> so we can access the properties within the callbacks
         this.handleMousePosition = this.handleMousePosition.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.handleKeyUp = this.handleKeyUp.bind(this);
 
         // set key event listeners
         this.setEventListeners();
