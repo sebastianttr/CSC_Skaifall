@@ -27,7 +27,7 @@ class Button extends GenericObjects{
      * @param {Number} fontSize 
      * @param {Function} callback 
      */
-    constructor(x,y,w,h,text,fontSize,callback){
+    constructor(x,y,w,h,text,fontSize,callback,assets){
         // call super constructor
         super(x,y,w,h)
 
@@ -35,6 +35,18 @@ class Button extends GenericObjects{
         this.text = text;
         this.fontSize = fontSize;
         this.callback = callback;
+        this.assets = assets;
+
+        console.log(assets)
+
+        // unreferenced copy would be very nice in this case
+        this.hoverAudio = new Audio();
+        this.hoverAudio.src = assets.hoverAudio.src;
+
+
+        this.selectionAudio = new Audio();
+        this.selectionAudio.src = assets.selectionAudio.src;
+
 
         // setting the animation properties, which keeps track of the animations
         this.borderAnimationOffset = {
@@ -76,6 +88,13 @@ class Button extends GenericObjects{
         if(checkCollisionBetween(this,this.mouseCollisionBox)){
             //is hovering is true
             this.isHovering = true;
+            
+            if(this.hoverAudio.currentTime >= 0){
+                this.hoverAudio.currentTime = 0;
+            }
+
+            this.hoverAudio.play();
+            
 
             // set animation condition
             if(this.borderAnimationOffset.x < 5 && this.borderAnimationOffset.y > -5){
@@ -87,6 +106,11 @@ class Button extends GenericObjects{
 
             // callback if the button has been clicked
             if(this.isClicked){
+                if(this.selectionAudio.currentTime >= 0){
+                    this.selectionAudio.currentTime = 0;
+                }
+    
+                this.selectionAudio.play();
                 this.callback();
             }
         }
@@ -219,7 +243,6 @@ class Button extends GenericObjects{
      * A function to reset the event listener -> usually called by the destroy() hook
      */
     removeEventListeners(){
-        //console.log("remove event listeners")
         canvas.removeEventListener("mousemove",this.handleMouseMove,true);
         canvas.removeEventListener("mousedown",this.handleMouseClickDown,true);
         canvas.removeEventListener("mouseup",this.handleMouseClickUp,true);

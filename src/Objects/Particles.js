@@ -15,14 +15,16 @@ class Particles extends GameObjects{
      * @param  {Number} heigth
      * @param  {Array} particlesImg an array of all the loaded particle images
      */
-    constructor(width,heigth,endX,endY,particlesImg){
+    constructor(width,heigth,endX,endY,rotation,particlesImg){
         super(0,0,width,heigth);
+        this.rotation = rotation;
         this.particlesImg = particlesImg;
         this.endX = endX;
         this.endY = endY;
         this.velocityX = 0;
         this.velocityY = 0;
-        
+        this.done = false;
+
         this.init();
     }
 
@@ -39,12 +41,15 @@ class Particles extends GameObjects{
      * @param {Number} timePassedSinceLastRender 
      */
     update(timePassedSinceLastRender){
-        this.velocityX = this.endX - this.x;
+        this.velocityX =  Math.round(this.endX - this.x);
         this.x += this.velocityX * timePassedSinceLastRender / 1000
         
-        this.velocityY = this.endY - this.y;
+        this.velocityY = Math.round(this.endY - this.y);
         this.y += this.velocityY * timePassedSinceLastRender / 1000
-        //this.velocityY = this.endY - this.y;
+
+        if(this.velocityX == 0 && this.velocityX == 0){
+            this.done = true;
+        }
     }   
 
     /**
@@ -52,6 +57,8 @@ class Particles extends GameObjects{
      */
     render(){
         super.render();
+
+        ctx.rotate(this.rotation * (Math.PI/180));
 
         ctx.drawImage(
             this.particlesImg,
@@ -61,7 +68,6 @@ class Particles extends GameObjects{
             this.height
         )
         
-    
     }   
 }
 

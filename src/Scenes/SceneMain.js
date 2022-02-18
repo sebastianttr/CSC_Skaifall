@@ -33,34 +33,158 @@ let SceneMain = function(props){
                     src:"./Assets/images/obstacles/meteor_1.png",
                     type: Image
                 },
+                obstacle1:{
+                    src:"./Assets/images/obstacles/meteor_1.png",
+                    type: Image,
+                    extras: {
+                        rotation: 90
+                    }
+                },
                 obstacle2:{
                     src:"./Assets/images/obstacles/meteor_2.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 135
+                    }
                 },
                 obstacle3:{
                     src:"./Assets/images/obstacles/meteor_3.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 180
+                    }
                 },
                 obstacle4:{
                     src:"./Assets/images/obstacles/meteor_4.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 225
+                    }
                 },
                 obstacle5:{
                     src:"./Assets/images/obstacles/meteor_5.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 270
+                    }
                 },
                 obstacle6:{
                     src:"./Assets/images/obstacles/meteor_6.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 315
+                    }
                 },
                 obstacle7:{
                     src:"./Assets/images/obstacles/meteor_7.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 360
+                    }
                 },
                 obstacle8:{
                     src:"./Assets/images/obstacles/meteor_8.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 45
+                    }
                 },
+                particle1:{
+                    src:"./Assets/images/obstacles/particles/p1.png",
+                    type:Image,
+                    extras:{
+                        x:-15,
+                        y:-35,          
+                    }
+                },
+                particle2:{
+                    src:"./Assets/images/obstacles/particles/p2.png",
+                    type:Image,
+                    extras:{
+                        x:-29,
+                        y:-30,          
+                    }
+                },
+                particle3:{
+                    src:"./Assets/images/obstacles/particles/p3.png",
+                    type:Image,
+                    extras:{
+                        x:-33,
+                        y:-11,          
+                    }
+                },
+                particle4:{
+                    src:"./Assets/images/obstacles/particles/p4.png",
+                    type:Image,
+                    extras:{
+                        x:-32,
+                        y:8,          
+                    }
+                },
+                particle5:{
+                    src:"./Assets/images/obstacles/particles/p5.png",
+                    type:Image,
+                    extras:{
+                        x:-13,
+                        y:11,          
+                    }
+                },
+                particle6:{
+                    src:"./Assets/images/obstacles/particles/p6.png",
+                    type:Image,
+                    extras:{
+                        x:5,
+                        y:0,          
+                    }
+                },
+                particle7:{
+                    src:"./Assets/images/obstacles/particles/p7.png",
+                    type:Image,
+                    extras:{
+                        x:4,
+                        y:-30,          
+                    }
+                },
+                particle8:{
+                    src:"./Assets/images/obstacles/particles/p8.png",
+                    type:Image,
+                    extras:{
+                        x:-2,
+                        y:-24,          
+                    }
+                },
+                particle9:{
+                    src:"./Assets/images/obstacles/particles/p9.png",
+                    type:Image,
+                    extras:{
+                        x:-15,
+                        y:0,          
+                    }
+                },
+                particle10:{
+                    src:"./Assets/images/obstacles/particles/p10.png",
+                    type:Image,
+                    extras:{
+                        x:-15,
+                        y:-26,          
+                    }
+                },
+                selectionAudio:{
+                    src:"./Assets/audio/selection.wav",
+                    type: Audio
+                },
+                hoverAudio:{
+                    src:"./Assets/audio/hover.wav",
+                    type: Audio
+                },
+                rocketAudio:{
+                    src:"./Assets/audio/rocket_turbine.wav",
+                    type: Audio
+                },
+                explosionAudio:{
+                    src:"./Assets/audio/explosion.wav",
+                    type: Audio
+                }
             },
             setupProperties:{
                 gameObjects:[],
@@ -70,7 +194,15 @@ let SceneMain = function(props){
                 playerDiedFlag:false,
                 objectSpawner:null,
                 score:0,
-                difficultyLevel:0
+                difficultyLevel:0,
+                screenShake:{
+                    setX:0,
+                    setY:0,
+                    x:0,
+                    y:0,
+                    dx:1,
+                    dy:1
+                }
             },
             init(){
                 this.player = new Player(
@@ -82,7 +214,8 @@ let SceneMain = function(props){
                     this.assets.flameSprite,
                     {
                         contain:true,
-                        mouseInteraction:true
+                        mouseInteraction:true,
+                        audio: this.assets.rocketAudio
                     }
                 )
 
@@ -96,6 +229,7 @@ let SceneMain = function(props){
                 this.objectSpawner = new ObjectSpawner(objectSpawnerOptions);
 
                 this.spawnNewObstacle();
+
             },
             update(timePassedSinceLastRender){
                 let objToRemove = [];
@@ -110,8 +244,7 @@ let SceneMain = function(props){
 
                         this.score++;
 
-                        if(this.score % 5 == 0){
-                            //console.log("Increasing difficulty")
+                        if(this.score % 5 == 0 && !this.playerDiedFlag){
                             this.objectSpawner.options.min *= 0.95;
                             this.objectSpawner.options.max *= 0.95;
                             this.playerVelocity *= 1.02;
@@ -119,12 +252,18 @@ let SceneMain = function(props){
                     }
 
                     if(!(el instanceof Player) && checkCollisionBetween(el,this.player)){
-                        //console.log("Colliding")
                         // if not dead
                         if(this.player.health > 0)  this.player.health -= 1;
                         //if dead
                         else {
+                            el.isHit = true;
+                            this.playerVelocity = 0.1;
                             this.playerDiedFlag = true;
+                            this.player.removeEventListeners();
+
+                            this.assets.explosionAudio.play();
+                            
+                            this.stopSpawning();
                         }
                     }
                     el.update(timePassedSinceLastRender);
@@ -134,15 +273,41 @@ let SceneMain = function(props){
                     this.gameObjects.splice(this.gameObjects.indexOf(el),1)
                 })
 
-                // do something if the player died
+
                 if(this.playerDiedFlag){
-                    this.switchSceneWithProps("SceneEnd",this.score);
+
+                    // calculate velocity X
+                    this.screenShake.dx = Math.round(this.screenShake.setX - this.screenShake.x);
+
+                    // if velocityX is 0, new setX
+                    if(this.screenShake.dx == 0){
+                        this.screenShake.setX = Math.random() * 4
+                    }
+
+                    // calculate x
+                    this.screenShake.x += this.screenShake.dx * timePassedSinceLastRender / 20
+
+                    // calculate velocity X
+                    this.screenShake.dy = Math.round(this.screenShake.setY - this.screenShake.y);
+
+                    // if velocityX is 0, new setY
+                    if(this.screenShake.dy == 0){
+                        this.screenShake.setY = Math.random() * 4
+                    }
+
+                    // calculate y
+                    this.screenShake.y += this.screenShake.dy * timePassedSinceLastRender / 20
+
                 }
+
             },
             render(){
                 //clear and reset canvas
                 ctx.resetTransform();
                 ctx.clearRect(0,0,CONFIG.canvas.width,CONFIG.canvas.height);
+
+                ctx.translate(this.screenShake.x,this.screenShake.y);
+
 
                 //draw background
                 ctx.drawImage(
@@ -153,6 +318,7 @@ let SceneMain = function(props){
                     this.assets.backgroundImg.naturalHeight * 0.68
                 )
     
+
                 this.gameObjects.forEach((el) => {
                     el.render();
                 })
@@ -186,7 +352,7 @@ let SceneMain = function(props){
                 ctx.restore();
             },
             destroy(){
-                //console.log("stopping spawn")
+                this.player.stop();
                 this.gameObjects.length = 0;
                 this.player.removeEventListeners();
                 this.stopSpawning();
@@ -195,7 +361,6 @@ let SceneMain = function(props){
                 spawnNewObstacle(){
                     if(this.objectSpawner != null)
                         this.objectSpawner.spawnAfterTime(()=>{
-                            //console.log("creating obstacle")
                             this.gameObjects.push(this.getRandomObstacle())
                             this.spawnNewObstacle();
                         })
@@ -211,8 +376,21 @@ let SceneMain = function(props){
                         0,
                         this.assets[`obstacle${randomObstacleIndex}`].naturalWidth,
                         this.assets[`obstacle${randomObstacleIndex}`].naturalHeight,
-                        this.assets[`obstacle${randomObstacleIndex}`]
+                        this.assets[`obstacle${randomObstacleIndex}`],
+                        this.getParticlesArray(),
+                        ()=> {
+                            this.switchSceneWithProps("SceneEnd",this.score);
+                        }
                     )
+                },
+                getParticlesArray(){
+                    let particlesArray = [];
+
+                    Object.keys(this.assets).filter(el => el.startsWith("particle")).forEach((item)=>{
+                        particlesArray.push(this.assets[item])
+                    })
+
+                    return particlesArray;
                 },
                 getNumNDigits(num){
                     return num.toString().length;

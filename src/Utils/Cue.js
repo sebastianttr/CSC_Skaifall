@@ -110,10 +110,26 @@ class Cue {
      */
     #loadAssets(type,src){
         return new Promise((resolve,reject) => {
-            let newAsset = new type;
-            newAsset.src = src;
-            newAsset.onload = () => {
-                resolve(newAsset)
+            try{
+                let newAsset;
+                if(type == Audio){
+                    newAsset = new Audio();
+                    newAsset.src = src;
+                    newAsset.oncanplay = () => {
+                        resolve(newAsset)
+                    }
+                }
+                else if(type == Image){
+                    newAsset = new Image();
+                    newAsset.src = src;
+                    newAsset.onload = () => {
+                        resolve(newAsset)
+                    }
+                }
+            }
+            catch(e){
+                console.error("Error: " + e)
+                reject();
             }
         })
     }

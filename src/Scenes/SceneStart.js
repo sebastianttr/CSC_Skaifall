@@ -27,6 +27,18 @@ let SceneStart = function(props){
                             width: 72
                         }
                     }
+                },
+                selectionAudio:{
+                    src:"./Assets/audio/selection.wav",
+                    type: Audio
+                },
+                hoverAudio:{
+                    src:"./Assets/audio/hover.wav",
+                    type: Audio
+                },
+                rocketAudio:{
+                    src:"./Assets/audio/rocket_turbine.wav",
+                    type: Audio
                 }
             },
             setupProperties:{
@@ -64,7 +76,8 @@ let SceneStart = function(props){
                     this.assets.flameSprite,
                     {
                         contain:false,
-                        mouseInteraction:false
+                        mouseInteraction:false,
+                        audio: this.assets.rocketAudio
                     }
                 )
 
@@ -78,9 +91,9 @@ let SceneStart = function(props){
                     "Play",
                     30,
                     () => {
-                        //console.log("next")
                         this.nextSceneFlag = true;
-                    }
+                    },
+                    this.assets
                 );
 
                 this.guideButton = new Button(
@@ -91,9 +104,9 @@ let SceneStart = function(props){
                     "How to Play",
                     25,
                     () => {
-                        //console.log("Open dialog here!")
                         this.howToPlayDialog.showDialog();
-                    }
+                    },
+                    this.assets
                 );
 
                 this.howToPlayDialog = new Dialog(
@@ -112,9 +125,9 @@ let SceneStart = function(props){
                             "I Understand!",
                             25,
                             () => {
-                                //console.log("I Understand pressed!")
                                 this.howToPlayDialog.closeDialog();
-                            }
+                            },
+                            this.assets
                         )
                     ]
                 )
@@ -127,7 +140,6 @@ let SceneStart = function(props){
 
                 this.highScore = Number(localStorage.getItem("highscore"));
 
-                this.setKeyEventListeners();
             },
             update(){
                 // next scene animation
@@ -243,8 +255,8 @@ let SceneStart = function(props){
                 )
             },
             destroy(){
+                this.player.stop();
                 document.getElementsByTagName("video")[0].style.display = "none";
-                this.removeKeyEventListeners();
                 this.startButton.removeEventListeners();
                 this.guideButton.removeEventListeners();
             },  
@@ -277,20 +289,6 @@ let SceneStart = function(props){
 
                         this.player.y += this.player.floatAnimationSteps
                     }
-                },
-                setKeyEventListeners(){
-                    document.onkeydown = (ev) => {
-                        ev.preventDefault();
-                        console.log(`In SceneStart keydown ${ev.code}`)
-                    }
-
-                    document.onkeyup = (ev) => {
-                        console.log(`In SceneStart keyup ${ev.code}`)
-                    }
-                },
-                removeKeyEventListeners(){
-                    document.onkeydown = null;
-                    document.onkeyup = null;
                 },
                 async drawVideoFrame(){
                     ctx.save();

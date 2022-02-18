@@ -11,7 +11,6 @@ import Sprite from "../Utils/Sprite.js";
  */
 class Player extends GameObjects{
 
-    
     /**
      * 
      * Constructer set all the states. 
@@ -27,7 +26,6 @@ class Player extends GameObjects{
     constructor(x,y,width,height,assets,flameSprite,options){
         super(x, y, width, height, null, CONFIG);
 
- 
         this.velocity = 0.5;
         this.currentKeys = {};
         this.lastDirection = 1;
@@ -39,6 +37,7 @@ class Player extends GameObjects{
         this.assets = assets;
         this.translateState = "idle"
         this.health = 1;
+
         this.mousePosition = {
             x:0,
             y:0
@@ -52,9 +51,9 @@ class Player extends GameObjects{
             this.flameSprite.extras.frameSize,
         )
         
-
-      
-
+        this.options.audio.loop = true;
+        this.options.audio.play();
+        this.options.audio.volume = 0.3;
     
         this.init();
     }
@@ -77,7 +76,6 @@ class Player extends GameObjects{
             this.velocityX = (this.mousePosition.x) - this.x
             this.x += this.velocityX * timePassedSinceLastRender / 100
     
-            //console.log(this.velocityX)
     
             this.velocityY = (this.mousePosition.y) - this.y
             this.y += timePassedSinceLastRender / 100 * this.velocityY;
@@ -85,7 +83,6 @@ class Player extends GameObjects{
 
         // boundaries. also check if it should be within a boundary. 
         if(this.options.contain && (this.y < 600 || this.y > 750)){
-            //console.log("setting old y")
             this.y = this.oldY
         }
     }
@@ -126,6 +123,10 @@ class Player extends GameObjects{
 
         //reset the transform
         ctx.resetTransform();
+    }
+
+    stop(){
+        this.options.audio.pause();
     }
 
     /**

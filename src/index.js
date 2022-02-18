@@ -41,7 +41,7 @@ const app = () => {
     })
 
     // set the scene and run.
-    sceneSwitcher.setCurrentScene("SceneStart");
+    sceneSwitcher.setCurrentScene("SceneStart",0);
     sceneSwitcher.run();
 }
 

@@ -14,7 +14,59 @@ let SceneEnd = function(props){
                 },
                 obstacle1:{
                     src:"./Assets/images/obstacles/meteor_1.png",
-                    type: Image
+                    type: Image,
+                    extras: {
+                        rotation: 90
+                    }
+                },
+                obstacle2:{
+                    src:"./Assets/images/obstacles/meteor_2.png",
+                    type: Image,
+                    extras: {
+                        rotation: 135
+                    }
+                },
+                obstacle3:{
+                    src:"./Assets/images/obstacles/meteor_3.png",
+                    type: Image,
+                    extras: {
+                        rotation: 180
+                    }
+                },
+                obstacle4:{
+                    src:"./Assets/images/obstacles/meteor_4.png",
+                    type: Image,
+                    extras: {
+                        rotation: 225
+                    }
+                },
+                obstacle5:{
+                    src:"./Assets/images/obstacles/meteor_5.png",
+                    type: Image,
+                    extras: {
+                        rotation: 270
+                    }
+                },
+                obstacle6:{
+                    src:"./Assets/images/obstacles/meteor_6.png",
+                    type: Image,
+                    extras: {
+                        rotation: 315
+                    }
+                },
+                obstacle7:{
+                    src:"./Assets/images/obstacles/meteor_7.png",
+                    type: Image,
+                    extras: {
+                        rotation: 360
+                    }
+                },
+                obstacle8:{
+                    src:"./Assets/images/obstacles/meteor_8.png",
+                    type: Image,
+                    extras: {
+                        rotation: 45
+                    }
                 },
                 particle1:{
                     src:"./Assets/images/obstacles/particles/p1.png",
@@ -96,6 +148,14 @@ let SceneEnd = function(props){
                         y:-26,          
                     }
                 },
+                selectionAudio:{
+                    src:"./Assets/audio/selection.wav",
+                    type: Audio
+                },
+                hoverAudio:{
+                    src:"./Assets/audio/hover.wav",
+                    type: Audio
+                },
             },
             setupProperties:{
                 gameObjects:[],
@@ -107,7 +167,6 @@ let SceneEnd = function(props){
                 backToMenuFlag: false,
                 textOpacity: 1,
                 highScore: null,
-                testObstacle: null
             },
             init(){
                 this.restartButton = new Button(
@@ -119,7 +178,8 @@ let SceneEnd = function(props){
                     30,
                     () => {
                         this.restartGameFlag = true;
-                    }
+                    },
+                    this.assets
                 );
 
                 this.backToMenuButton = new Button(
@@ -131,27 +191,15 @@ let SceneEnd = function(props){
                     25,
                     () => {
                         this.backToMenuFlag = true;
-                    }
+                    },
+                    this.assets
                 )
-
-                this.testObstacle = new Obstacle(
-                    150,
-                    250,
-                    this.assets[`obstacle1`].naturalWidth,
-                    this.assets[`obstacle1`].naturalHeight,
-                    this.assets[`obstacle1`],
-                    this.getParticlesArray(),
-                )
-
-                this.testObstacle.isStill = true;
-                this.testObstacle.isHit = true;
 
                 this.highScore = Number(localStorage.getItem("highscore"));
                 if(props > this.highScore){
                     localStorage.setItem("highscore",props);
                 }
 
-                this.setKeyEventListeners();
             },
             update(timePassedSinceLastRender){
                 if(this.restartGameFlag && !this.backToMenuFlag){
@@ -173,7 +221,6 @@ let SceneEnd = function(props){
 
                 this.restartButton.update();
                 this.backToMenuButton.update();
-                this.testObstacle.update(timePassedSinceLastRender);
             },
             render(){
                 //clear and reset canvas
@@ -234,7 +281,6 @@ let SceneEnd = function(props){
 
                 this.restartButton.render();
                 this.backToMenuButton.render();
-                this.testObstacle.render();
 
                 ctx.fillStyle = `rgba(0, 0, 0, ${0})`
                 ctx.fillRect(
@@ -272,37 +318,15 @@ let SceneEnd = function(props){
                 ctx.restore();
             },
             destroy(){
-                this.removeKeyEventListeners();
                 this.restartButton.removeEventListeners();
                 this.backToMenuButton.removeEventListeners();
             },  
             methods:{
-                setKeyEventListeners(){
-                    document.onkeydown = (ev) => {
-                        ev.preventDefault();
-                        console.log(`In SceneStart keydown ${ev.code}`)
-                    }
-
-                    document.onkeyup = (ev) => {
-                        console.log(`In SceneStart keyup ${ev.code}`)
-                    }
-                },
-                removeKeyEventListeners(){
-                    document.onkeydown = null;
-                    document.onkeyup = null;
-                },
+                
                 getNumNDigits(num){
                     return num.toString().length;
                 },
-                getParticlesArray(){
-                    let particlesArray = [];
-
-                    Object.keys(this.assets).filter(el => el.startsWith("particle")).forEach((item)=>{
-                        particlesArray.push(this.assets[item])
-                    })
-
-                    return particlesArray;
-                }
+                
             }
         }
     )

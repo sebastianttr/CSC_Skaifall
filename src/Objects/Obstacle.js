@@ -21,7 +21,7 @@ class Obstacle extends GameObjects{
      * @param  {Number} height
      * @param  {Number} img
      */
-    constructor(x,y,width,height, img,particleImages){
+    constructor(x,y,width,height, img,particleImages,doneCb){
         super(x,y,width,height);
         this.img = img;
 
@@ -35,7 +35,8 @@ class Obstacle extends GameObjects{
 
         this.particleImages = particleImages;
         this.particles = [];
-        
+
+        this.doneCb = doneCb;
 
         this.particleImages.forEach(item => {
             this.particles.push(
@@ -44,12 +45,12 @@ class Obstacle extends GameObjects{
                     item.naturalHeight,
                     map(Math.random(),0,1,-10,30),
                     map(Math.random(),0,1,-10,30),
+                    img.extras.rotation,
                     item
                 )
             )
         })
-
-
+ 
         this.init();
     }
 
@@ -73,11 +74,17 @@ class Obstacle extends GameObjects{
         // if the obstacle is hit : update the particle. 
         else {
             //console.log("updating");
+            let doneCondition = false;
             this.particles.forEach(el => {
                 el.update(timePassedSinceLastRender);
+                //console.log(doneCondition || el.done)
+                doneCondition = el.done;
             })
-        }
 
+            if(doneCondition){
+                this.doneCb();
+            }
+        }
     }
 
     /**
@@ -87,6 +94,8 @@ class Obstacle extends GameObjects{
         // call the super method to render box
         super.render();
         ctx.translate(this.x, this.y); 
+        ctx.rotate(Math.PI/2)
+
 
         if(!this.isHit){
             
@@ -99,17 +108,7 @@ class Obstacle extends GameObjects{
             )
         }
         // if it is not hit
-        else {
-            //console.log("render");
-            /*
-            ctx.drawImage(
-                this.img,
-                -this.width/2,
-                -this.height/2,
-                this.width,
-                this.height
-            )
-            */
+        else {           
             this.particles.forEach(el => {
                 el.render();
             })
